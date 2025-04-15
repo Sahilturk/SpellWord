@@ -21,6 +21,13 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import Link from "next/link";
+import { inferRouterOutputs } from '@trpc/server';
+import { AppRouter } from '@/server'; // <-- adjust if needed
+
+
+type RouterOutput = inferRouterOutputs<AppRouter>;
+type Spellbook = RouterOutput['spellbooks']['getById']; // get the whole spellbook
+type Spell = NonNullable<Spellbook>['spells'][number]; // get one spell from that
 
 export default function Spellbook() {
   const spellbooks = trpc.spellbooks.get.useQuery();
@@ -55,16 +62,16 @@ export default function Spellbook() {
 
   return (
     <div className="grid grid-cols-4 gap-5 whitespace-nowrap overflow-x-hidden">
-      {spellbooks.data?.map((spellbook) => (
-        <Link key={spellbook.id} href={`/spellbook/${spellbook.id}`}>
+      {spellbooks.data?.map((spellbook:Spellbook) => (
+        <Link key={spellbook?.id} href={`/spellbook/${spellbook?.id}`}>
           <Card>
             <CardHeader>
-              <CardTitle>{spellbook.title}</CardTitle>
-              <CardDescription>{spellbook.description}</CardDescription>
+              <CardTitle>{spellbook?.title}</CardTitle>
+              <CardDescription>{spellbook?.description}</CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="flex gap-2">
-              {spellbook.spells.map((spell) => (
+              {spellbook?.spells.map((spell:Spell) => (
                 <Image
                   key={spell.id}
                   src={spell.image ?? ""}
@@ -78,7 +85,9 @@ export default function Spellbook() {
               <Button onClick={(e) =>{
                 e.stopPropagation();
                 e.preventDefault();
-                deleteSpellBook(spellbook.id)}}>Delete</Button>
+                if (spellbook) {
+                  deleteSpellBook(spellbook.id);
+                }}}>Delete</Button>
                 </div>
             </CardContent>
           </Card>
