@@ -22,6 +22,13 @@ import {
 import { trpc } from "@/server/client";
 import Image from "next/image";
 import React, { useRef, useState } from "react";
+import { inferRouterOutputs } from '@trpc/server';
+import { AppRouter } from '@/server'; // <-- adjust if needed
+
+
+type RouterOutput = inferRouterOutputs<AppRouter>;
+type Spellbook = RouterOutput['spellbooks']['getById']; // get the whole spellbook
+type Spell = NonNullable<Spellbook>['spells'][number]; // get one spell from that
 
 export default function SpellbookPage({
   params,
@@ -114,7 +121,7 @@ export default function SpellbookPage({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {spellbook.data?.spells.map((spell) => (
+          {spellbook.data?.spells.map((spell: Spell) => (
             <TableRow key={spell.id}>
               <TableCell>{spell.title}</TableCell>
               <TableCell>{spell.description}</TableCell>
