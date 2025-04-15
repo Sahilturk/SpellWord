@@ -1,9 +1,7 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../trpc";
 
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../prisma";
 
 export const spellsRouter = router({
   get: publicProcedure.query(async () => {
