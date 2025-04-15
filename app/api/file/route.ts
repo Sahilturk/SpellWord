@@ -21,7 +21,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
       // Wait for the stream to finish writing
       await new Promise((resolve, reject) => {
-        fileStream.on("finish", resolve);
+        fileStream.on("finish", () => resolve(undefined));
         fileStream.on("error", reject);
       });
 
